@@ -14,15 +14,27 @@ const SORTS: any = {
   POINT: (list: any) => sortBy(list, 'points').reverse(),
 };
 
+type SortProps = {
+  sortKey: string;
+  isReverse: boolean;
+}
+
 const List = ({ list, onRemoveItem }: ListProps) => {
-  const [sort, setSort] = React.useState('NONE');
+  const [sort, setSort] = React.useState<SortProps>({
+    sortKey: 'NONE',
+    isReverse: false,
+  });
 
   const handleSort = (sortKey: string) => {
-    setSort(sortKey);
+    const isReverse = sort.sortKey === sortKey && !sort.isReverse;
+
+    setSort({ sortKey: sortKey, isReverse: isReverse });
   };
 
-  const sortFunction = SORTS[sort];
-  const sortedList = sortFunction(list);
+  const sortFunction = SORTS[sort.sortKey];
+  const sortedList = sort.isReverse
+    ? sortFunction(list).reverse() 
+    : sortFunction(list);
   return (
     <div>
       <div style={{ display: 'flex' }}>
