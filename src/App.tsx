@@ -1,13 +1,13 @@
 import React from 'react';
 import axios from 'axios';
-import cn from 'classnames';
 
 import styles from './App.module.css';
-import { ReactComponent as Check } from './assets/check.svg';
+import SearchForm from './SearchForm';
+import List from './List';
 
 export const API_ENDPOINT = 'https://hn.algolia.com/api/v1/search?query=';
 
-type Story = {
+export type Story = {
   objectID: string;
   url: string;
   title: string;
@@ -16,58 +16,59 @@ type Story = {
   points: number;
 };
 
-type Stories = Array<Story>;
+export type Stories = Array<Story>;
 
-type StoriesState = {
+export type StoriesState = {
   data: Stories;
   isLoading: boolean;
   isError: boolean;
 };
 
-interface StoriesFetchInitAction {
+export interface StoriesFetchInitAction {
   type: 'STORIES_FETCH_INIT';
 }
 
-interface StoriesFetchSuccessAction {
+export interface StoriesFetchSuccessAction {
   type: 'STORIES_FETCH_SUCCESS';
   payload: Stories;
 }
 
-interface StoriesFetchFailureAction {
+export interface StoriesFetchFailureAction {
   type: 'STORIES_FETCH_FAILURE';
 }
 
-interface StoriesRemoveAction {
+export interface StoriesRemoveAction {
   type: 'REMOVE_STORY';
   payload: Story;
 }
 
-type StoriesAction =
+export type StoriesAction =
   | StoriesFetchInitAction
   | StoriesFetchSuccessAction
   | StoriesFetchFailureAction
   | StoriesRemoveAction;
 
-type ListProps = {
+export type ListProps = {
   list: Stories;
   onRemoveItem: (item: Story) => void;
 };
 
-type ItemProps = {
+export type ItemProps = {
   item: Story;
   onRemoveItem: (item: Story) => void;
 };
 
-type SearchFormProps = {
+export type SearchFormProps = {
   searchTerm: string;
   onSearchInput: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onSearchSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
 };
 
-type InputWithLabelProps = {
+export type InputWithLabelProps = {
   id: string;
   value: string;
   type?: string;
+  label: string;
   onInputChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   isFocused?: boolean;
   children: React.ReactNode;
@@ -213,93 +214,4 @@ const App = () => {
   );
 };
 
-const SearchForm = ({
-  searchTerm,
-  onSearchInput,
-  onSearchSubmit,
-}: SearchFormProps) => (
-  <form onSubmit={onSearchSubmit} className={styles.searchForm}>
-    <InputWithLabel
-      id="search"
-      label="Search"
-      value={searchTerm}
-      onInputChange={onSearchInput}
-    >
-      <strong>Search:</strong>
-    </InputWithLabel>
-    <button
-      type="submit"
-      disabled={!searchTerm}
-      className={cn(styles.button, styles.buttonLarge)}
-    >
-      Submit
-    </button>
-  </form>
-);
-
-const InputWithLabel = ({
-  id,
-  value,
-  type = 'text',
-  onInputChange,
-  isFocused,
-  children
-}: InputWithLabelProps) => {
-  const inputRef = React.useRef<HTMLInputElement>(null!);
-
-  React.useEffect(() => {
-    if (isFocused && inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [isFocused]);
-
-  return (
-    <>
-      <label htmlFor={id} className={styles.label}>{children}</label>
-      <input className={styles.input} ref={inputRef} id={id} type={type} value={value} onChange={onInputChange} />
-    </>
-  );
-};
-
-const List = ({ list, onRemoveItem }: ListProps) =>
-  <>
-    {list.map(item => (
-      <Item
-        key={item.objectID}
-        item={item}
-        onRemoveItem={onRemoveItem}
-      />
-    ))}
-  </>
-  ;
-
-const Item = ({
-  item,
-  onRemoveItem
-}: ItemProps) => {
-  const handleRemoveItem = () => onRemoveItem(item);
-
-  return (
-    <div className={styles.item} key={item.objectID}>
-      <span style={{ width: '40%' }}>
-        <a href={item.url}>{item.title}</a>
-      </span>
-      <span style={{ width: '30%' }}>{item.author}</span>
-      <span style={{ width: '10%' }}>{item.num_comments}</span>
-      <span style={{ width: '10%' }}>{item.points}</span>
-      <span style={{ width: '10%' }}>
-        <button
-          type="button"
-          onClick={handleRemoveItem}
-          className={cn(styles.button, styles.buttonSmall)}
-        >
-          <Check height="18px" width="18px" />
-        </button>
-      </span>
-    </div>
-  );
-};
-
 export default App;
-
-export { SearchForm, InputWithLabel, List, Item };
