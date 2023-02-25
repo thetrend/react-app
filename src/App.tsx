@@ -5,7 +5,7 @@ import cn from 'classnames';
 import styles from './App.module.css';
 import { ReactComponent as Check } from './assets/check.svg';
 
-const API_ENDPOINT = 'https://hn.algolia.com/api/v1/search?query=';
+export const API_ENDPOINT = 'https://hn.algolia.com/api/v1/search?query=';
 
 type Story = {
   objectID: string;
@@ -301,3 +301,5 @@ const Item = ({
 };
 
 export default App;
+
+export { SearchForm, InputWithLabel, List, Item };
