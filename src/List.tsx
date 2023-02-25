@@ -1,21 +1,65 @@
-import { ListProps, ItemProps } from './App';
+import { ListProps, ItemProps, Stories, Story } from './App';
 import cn from 'classnames';
-
+import { sortBy } from 'lodash';
 import styles from './App.module.css';
 
 import { ReactComponent as Check } from './assets/check.svg';
+import React from 'react';
 
-const List = ({ list, onRemoveItem }: ListProps) =>
-  <>
-    {list.map(item => (
-      <Item
-        key={item.objectID}
-        item={item}
-        onRemoveItem={onRemoveItem}
-      />
-    ))}
-  </>
-  ;
+const SORTS: any = {
+  NONE: (list: any) => list,
+  TITLE: (list: any) => sortBy(list, 'title'),
+  AUTHOR: (list: any) => sortBy(list, 'author'),
+  COMMENT: (list: any) => sortBy(list, 'num_comments').reverse(),
+  POINT: (list: any) => sortBy(list, 'points').reverse(),
+};
+
+const List = ({ list, onRemoveItem }: ListProps) => {
+  const [sort, setSort] = React.useState('NONE');
+
+  const handleSort = (sortKey: string) => {
+    setSort(sortKey);
+  };
+
+  const sortFunction = SORTS[sort];
+  const sortedList = sortFunction(list);
+  return (
+    <div>
+      <div style={{ display: 'flex' }}>
+        <span style={{ width: '40%' }}>
+          <button type="button" onClick={() => handleSort('TITLE')}>
+            Title
+          </button>
+        </span>
+        <span style={{ width: '30%' }}>
+          <button type="button" onClick={() => handleSort('AUTHOR')}>
+            Author
+          </button>
+        </span>
+        <span style={{ width: '10%' }}>
+          <button type="button" onClick={() => handleSort('COMMENT')}>
+            Comments
+          </button>
+        </span>
+        <span style={{ width: '10%' }}>
+          <button type="button" onClick={() => handleSort('POINT')}>
+            Points
+          </button>
+        </span>
+        <span style={{ width: '10%' }}>
+          Actions
+        </span>
+      </div>
+      {sortedList.map((item: Story) => (
+        <Item
+          key={item.objectID}
+          item={item}
+          onRemoveItem={onRemoveItem}
+        />
+      ))}
+    </div>
+  );
+};
 
 const Item = ({
   item,
@@ -24,7 +68,7 @@ const Item = ({
   const handleRemoveItem = () => onRemoveItem(item);
 
   return (
-    <div className={styles.item} key={item.objectID}>
+    <div className={styles.item} style={{ display: 'flex' }} key={item.objectID}>
       <span style={{ width: '40%' }}>
         <a href={item.url}>{item.title}</a>
       </span>
