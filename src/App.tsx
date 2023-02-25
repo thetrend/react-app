@@ -66,19 +66,19 @@ const App = () => {
     { data: [], isLoading: false, isError: false }
   );
 
-  const handleFetchStories = React.useCallback(() => {
+  const handleFetchStories = React.useCallback(async () => {
     dispatchStories({ type: 'STORIES_FETCH_INIT' });
 
-    axios
-      .get(url)
-      .then(result => {
-        dispatchStories({
-          type: 'STORIES_FETCH_SUCCESS',
-          payload: result.data.hits,
-        })
-      })
-      .catch(() =>
-        dispatchStories({ type: 'STORIES_FETCH_FAILURE' }));
+    try {
+      const result = await axios.get(url);
+
+      dispatchStories({
+        type: 'STORIES_FETCH_SUCCESS',
+        payload: result.data.hits,
+      });
+    } catch {
+      dispatchStories({ type: 'STORIES_FETCH_FAILURE' });
+    }
   }, [url]);
 
   React.useEffect(() => {
@@ -107,10 +107,10 @@ const App = () => {
   return (
     <div>
       <h1>My Hacker Stories</h1>
-      <InputWithLabel 
-        id="search" 
-        label="Search" 
-        value={searchTerm} 
+      <InputWithLabel
+        id="search"
+        label="Search"
+        value={searchTerm}
         onInputChange={handleSearchInput}
       >
         <strong>Search:</strong>
